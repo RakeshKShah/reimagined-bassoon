@@ -22,15 +22,15 @@ curl -sS -o "$RESPONSE_FILE" -w '%{http_code}' \
   -X POST "$BASE_URL/register" \
   -H 'Content-Type: application/json' \
   --data "{\"email\":\"${EMAIL}\",\"password\":\"${PASSWORD}\",\"role\":\"SELLER\",\"storeName\":\"${STORE_NAME}\",\"bio\":\"${BIO}\"}" > "$STATUS_FILE"
-TOKEN="$(jq -r '.token' "$RESPONSE_FILE")"
-PAYLOAD_B64="$(printf '%s' "$TOKEN" | cut -d '.' -f2 | tr '_-' '/+')"
-PAD=$(( (4 - ${#PAYLOAD_B64} % 4) % 4 ))
-while [ "$PAD" -gt 0 ]; do PAYLOAD_B64="${PAYLOAD_B64}="; PAD=$((PAD - 1)); done
-printf '%s' "$PAYLOAD_B64" | base64 -d > "$PAYLOAD_FILE"
 
 # Then
 STATUS="$(cat "$STATUS_FILE")"
 [ "$STATUS" = "201" ]
+TOKEN="$(jq -r '.token' "$RESPONSE_FILE")"
+PAYLOAD_B64="$(printf '%s' "$TOKEN" | cut -d '.' -f2 | tr -- '-_' '+/')"
+PAD=$(( (4 - ${#PAYLOAD_B64} % 4) % 4 ))
+while [ "$PAD" -gt 0 ]; do PAYLOAD_B64="${PAYLOAD_B64}="; PAD=$((PAD - 1)); done
+printf '%s' "$PAYLOAD_B64" | base64 -d > "$PAYLOAD_FILE"
 jq -e --arg email "$EMAIL" '
   .user.email == $email and
   .user.role == "SELLER" and
