@@ -11,7 +11,7 @@ import adminRoutes from "./routes/admin";
 import { runWeeklyPayouts } from "./services/payouts";
 
 const app = express();
-const PORT = process.env.PORT ?? 4000;
+const PORT = process.env.PORT ?? 6713;
 
 app.use(cors({ origin: process.env.FRONTEND_URL ?? "http://localhost:5173" }));
 

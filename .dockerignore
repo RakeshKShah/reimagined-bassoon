@@ -1,0 +1,34 @@
+# Ignore node_modules everywhere
+**/node_modules/
+
+# Ignore frontend (not needed for backend image)
+frontend/
+
+# Ignore local env files
+.env
+.env.*
+
+# Ignore git internals
+.git/
+.gitignore
+
+# Ignore editor files
+.vscode/
+.idea/
+*.swp
+*.code-workspace
+
+# Ignore test artifacts
+coverage/
+*.log
+logs/
+
+# Ignore generated dist (rebuilt inside Docker)
+backend/dist/
+backend/*.tsbuildinfo
+
+# NOTE: Do NOT ignore:
+#   backend/prisma/          — schema.prisma + migrations needed for generate + migrate deploy
+#   backend/tsconfig*.json   — needed for tsc build
+#   backend/prisma.config.ts — needed for Prisma 7
+#   .codevalid/              — entrypoint.sh is COPY'd from here

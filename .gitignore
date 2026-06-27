@@ -28,7 +28,7 @@ postcss.config.js
 
 # Prisma
 /prisma/dev.db
-/prisma/migrations/
+# /prisma/migrations/ — un-ignored by CodeValid onboarding; migrations committed for migrate deploy
 **/schema.prisma.lock
 *.db
 *.sqlite
