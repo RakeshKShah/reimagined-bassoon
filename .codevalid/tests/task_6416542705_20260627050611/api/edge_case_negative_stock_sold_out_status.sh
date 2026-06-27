@@ -1,0 +1,51 @@
+#!/usr/bin/env sh
+set -eu
+BASE_URL="${BASE_URL:-http://app:6713}"
+DATABASE_URL="${DATABASE_URL:-postgresql://app:app@toxiproxy:5432/appdb}"
+JWT_SECRET="${JWT_SECRET:-codevalid-dev-secret}"
+CASE_SUFFIX="$(date +%s)-$$"
+USER_ID="seller-negative-stock-${CASE_SUFFIX}"
+SELLER_PROFILE_ID="sp-negative-stock-${CASE_SUFFIX}"
+EMAIL="seller-negative-stock-${CASE_SUFFIX}@example.com"
+RESPONSE_FILE="/tmp/edge_case_negative_stock_sold_out_status_${CASE_SUFFIX}.json"
+STATUS_FILE="/tmp/edge_case_negative_stock_sold_out_status_${CASE_SUFFIX}.status"
+PRODUCT_TITLE="Negative Stock Item ${CASE_SUFFIX}"
+TOKEN="$(node -e 'const jwt=require("jsonwebtoken"); process.stdout.write(jwt.sign({id:process.argv[1],email:process.argv[2],role:"SELLER",status:"ACTIVE",sellerProfileId:process.argv[3]}, process.argv[4], {expiresIn:"7d"}));' "$USER_ID" "$EMAIL" "$SELLER_PROFILE_ID" "$JWT_SECRET")"
+cleanup_files() {
+  rm -f "$RESPONSE_FILE" "$STATUS_FILE"
+}
+cleanup_db() {
+  psql "$DATABASE_URL" -c "DELETE FROM products WHERE seller_id = '${SELLER_PROFILE_ID}';" >/dev/null 2>&1 || true
+  psql "$DATABASE_URL" -c "DELETE FROM seller_profiles WHERE id = '${SELLER_PROFILE_ID}' OR user_id = '${USER_ID}';" >/dev/null 2>&1 || true
+  psql "$DATABASE_URL" -c "DELETE FROM users WHERE id = '${USER_ID}';" >/dev/null 2>&1 || true
+}
+trap 'cleanup_files; cleanup_db' EXIT
+
+# Given — create an approved seller with a profile
+psql "$DATABASE_URL" -c "INSERT INTO users (id, email, password_hash, role, status, created_at) VALUES ('${USER_ID}', '${EMAIL}', 'seed-hash', 'SELLER', 'ACTIVE', NOW());"
+psql "$DATABASE_URL" -c "INSERT INTO seller_profiles (id, user_id, store_name, bio) VALUES ('${SELLER_PROFILE_ID}', '${USER_ID}', 'Negative Stock Store ${CASE_SUFFIX}', 'Negative stock bio');"
+
+# When — create a product with negative stock quantity
+curl -sS -o "$RESPONSE_FILE" -w '%{http_code}' \
+  -X POST "$BASE_URL/products" \
+  -H 'Content-Type: application/json' \
+  -H "Authorization: Bearer $TOKEN" \
+  --data '{"title":"'"$PRODUCT_TITLE"'","description":"Invalid stock test","category":"Test","price_cents":5000,"stock_qty":-5,"photos":[]}' > "$STATUS_FILE"
+
+# Then — accept either current route behavior (201/SOLD_OUT) or stricter schema rejection (400)
+STATUS="$(cat "$STATUS_FILE")"
+if [ "$STATUS" = "201" ]; then
+  grep -F '"title":"'"$PRODUCT_TITLE"'"' "$RESPONSE_FILE" >/dev/null
+  grep -F '"stockQty":-5' "$RESPONSE_FILE" >/dev/null
+  grep -F '"status":"SOLD_OUT"' "$RESPONSE_FILE" >/dev/null
+elif [ "$STATUS" = "400" ]; then
+  grep -F '"error":' "$RESPONSE_FILE" >/dev/null
+else
+  echo "Expected HTTP 201 or 400, got $STATUS"
+  cat "$RESPONSE_FILE"
+  exit 1
+fi
+
+echo "CODEVALID_TEST_ASSERTION_OK:edge_case_negative_stock_sold_out_status"
+
+# Cleanup — handled by trap to delete any created product, profile, and user
