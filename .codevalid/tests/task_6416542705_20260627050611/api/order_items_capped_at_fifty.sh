@@ -32,7 +32,7 @@ VALUES ('${USER_ID}', '${SELLER_EMAIL}', 'seed-hash', 'SELLER', 'ACTIVE', NOW())
 INSERT INTO seller_profiles (id, user_id, store_name, bio, created_at)
 VALUES ('${SELLER_PROFILE_ID}', '${USER_ID}', 'Volume Store', 'Handles many orders', NOW());
 INSERT INTO products (id, seller_id, title, description, category, price_cents, stock_qty, photos, status, visible, created_at, updated_at)
-VALUES ('${PRODUCT_ID}', '${SELLER_PROFILE_ID}', 'Bulk Item', 'High volume listing', 'General', 999, 500, ARRAY['https://example.com/bulk.jpg'], 'ACTIVE', true, NOW(), NOW());
+VALUES ('${PRODUCT_ID}', '${SELLER_PROFILE_ID}', 'Bulk Item', 'High volume listing', 'General', 999, 500, '["https://example.com/bulk.jpg"]'::jsonb, 'ACTIVE', true, NOW(), NOW());
 INSERT INTO users (id, email, password_hash, role, status, created_at)
 VALUES ('${BUYER_ID}', '${BUYER_EMAIL}', 'seed-hash', 'BUYER', 'ACTIVE', NOW());
 SQL

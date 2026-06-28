@@ -34,7 +34,7 @@ VALUES ('${USER_ID}', '${SELLER_EMAIL}', 'seed-hash', 'SELLER', 'SUSPENDED', NOW
 INSERT INTO seller_profiles (id, user_id, store_name, bio, created_at)
 VALUES ('${SELLER_PROFILE_ID}', '${USER_ID}', 'Suspended Store', 'Under review', NOW());
 INSERT INTO products (id, seller_id, title, description, category, price_cents, stock_qty, photos, status, visible, created_at, updated_at)
-VALUES ('${PRODUCT_ID}', '${SELLER_PROFILE_ID}', 'Review Item', 'Suspended seller item', 'General', 1200, 4, ARRAY['https://example.com/review.jpg'], 'ACTIVE', true, NOW(), NOW());
+VALUES ('${PRODUCT_ID}', '${SELLER_PROFILE_ID}', 'Review Item', 'Suspended seller item', 'General', 1200, 4, '["https://example.com/review.jpg"]'::jsonb, 'ACTIVE', true, NOW(), NOW());
 INSERT INTO users (id, email, password_hash, role, status, created_at)
 VALUES ('${BUYER_ID}', '${BUYER_EMAIL}', 'seed-hash', 'BUYER', 'ACTIVE', NOW());
 INSERT INTO orders (id, buyer_id, status, subtotal_cents, fee_cents, total_cents, created_at, updated_at)

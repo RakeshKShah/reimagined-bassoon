@@ -36,8 +36,8 @@ INSERT INTO seller_profiles (id, user_id, store_name, bio, created_at)
 VALUES ('${SELLER_PROFILE_ID}', '${USER_ID}', 'Fresh Bakes', 'Artisanal pastries', NOW());
 INSERT INTO products (id, seller_id, title, description, category, price_cents, stock_qty, photos, status, visible, created_at, updated_at)
 VALUES
-  ('${PRODUCT_ID_NEWER}', '${SELLER_PROFILE_ID}', 'Croissant', 'Buttery pastry', 'Bakery', 650, 12, ARRAY['https://example.com/croissant.jpg'], 'ACTIVE', true, TIMESTAMPTZ '2024-01-10T09:00:00Z', NOW()),
-  ('${PRODUCT_ID_OLDER}', '${SELLER_PROFILE_ID}', 'Muffin', 'Blueberry muffin', 'Bakery', 450, 8, ARRAY['https://example.com/muffin.jpg'], 'ACTIVE', true, TIMESTAMPTZ '2024-01-09T08:00:00Z', NOW());
+  ('${PRODUCT_ID_NEWER}', '${SELLER_PROFILE_ID}', 'Croissant', 'Buttery pastry', 'Bakery', 650, 12, '["https://example.com/croissant.jpg"]'::jsonb, 'ACTIVE', true, TIMESTAMPTZ '2024-01-10T09:00:00Z', NOW()),
+  ('${PRODUCT_ID_OLDER}', '${SELLER_PROFILE_ID}', 'Muffin', 'Blueberry muffin', 'Bakery', 450, 8, '["https://example.com/muffin.jpg"]'::jsonb, 'ACTIVE', true, TIMESTAMPTZ '2024-01-09T08:00:00Z', NOW());
 INSERT INTO users (id, email, password_hash, role, status, created_at)
 VALUES ('${BUYER_ID}', '${BUYER_EMAIL}', 'seed-hash', 'BUYER', 'ACTIVE', NOW());
 INSERT INTO orders (id, buyer_id, status, subtotal_cents, fee_cents, total_cents, created_at, updated_at)

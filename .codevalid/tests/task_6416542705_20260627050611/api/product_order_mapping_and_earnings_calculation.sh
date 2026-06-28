@@ -38,8 +38,8 @@ INSERT INTO seller_profiles (id, user_id, store_name, bio, created_at)
 VALUES ('${SELLER_PROFILE_ID}', '${USER_ID}', 'Tech Gadgets', 'Cool tech', NOW());
 INSERT INTO products (id, seller_id, title, description, category, price_cents, stock_qty, photos, status, visible, created_at, updated_at)
 VALUES
-  ('${PRODUCT_ID_OLDER}', '${SELLER_PROFILE_ID}', 'Wireless Mouse', 'Ergonomic mouse', 'Electronics', 2500, 10, ARRAY['https://example.com/mouse.jpg'], 'ACTIVE', true, TIMESTAMPTZ '2024-02-01T10:00:00Z', NOW()),
-  ('${PRODUCT_ID_NEWER}', '${SELLER_PROFILE_ID}', 'USB-C Hub', 'Multiport adapter', 'Electronics', 3000, 15, ARRAY['https://example.com/hub.jpg'], 'ACTIVE', true, TIMESTAMPTZ '2024-02-03T12:00:00Z', NOW());
+  ('${PRODUCT_ID_OLDER}', '${SELLER_PROFILE_ID}', 'Wireless Mouse', 'Ergonomic mouse', 'Electronics', 2500, 10, '["https://example.com/mouse.jpg"]'::jsonb, 'ACTIVE', true, TIMESTAMPTZ '2024-02-01T10:00:00Z', NOW()),
+  ('${PRODUCT_ID_NEWER}', '${SELLER_PROFILE_ID}', 'USB-C Hub', 'Multiport adapter', 'Electronics', 3000, 15, '["https://example.com/hub.jpg"]'::jsonb, 'ACTIVE', true, TIMESTAMPTZ '2024-02-03T12:00:00Z', NOW());
 INSERT INTO users (id, email, password_hash, role, status, created_at)
 VALUES ('${BUYER_ID}', '${BUYER_EMAIL}', 'seed-hash', 'BUYER', 'ACTIVE', NOW());
 INSERT INTO orders (id, buyer_id, status, subtotal_cents, fee_cents, total_cents, created_at, updated_at)

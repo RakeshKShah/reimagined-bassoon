@@ -12,7 +12,7 @@ trap cleanup_files EXIT
 
 # When
 curl -sS -o "$RESPONSE_FILE" -w '%{http_code}' \
-  -X POST "$BASE_URL/register" \
+  -X POST "$BASE_URL/auth/register" \
   -H 'Content-Type: application/json' \
   --data '{"email":"not-an-email","password":"EmailPass123!","role":"BUYER"}' > "$STATUS_FILE"
 
